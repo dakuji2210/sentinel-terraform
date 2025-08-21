@@ -101,7 +101,7 @@ variable "aws_sg_egress" {
 variable "ec2_instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.micro"
+  default     = "t2.medium"
 
 }
 variable "ec2_ami_id" {
