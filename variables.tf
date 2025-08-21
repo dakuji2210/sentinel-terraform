@@ -9,7 +9,7 @@ variable "aws_vpc_name" {
   description = "CIDR block for the VPC"
   type        = string
   default     = "test_vpc"
-  
+
 }
 
 
@@ -40,7 +40,59 @@ variable "private_subnet_az" {
 }
 
 variable "aws_sg_ingress" {
-  
+  description = "Security group ingress rules"
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = [
+    {
+      description = "ssh access"
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = ["152.58.182.49/32"] # Replace with your IP address
+    },
+    {
+      description = "http access"
+      from_port   = 80
+      to_port     = 80
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      description = "https access"
+      from_port   = 443
+      to_port     = 443
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
+
+variable "aws_sg_egress" {
+  description = "Security group ingress rules for private subnet"
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = [
+    {
+      description = "Allow all outbound traffic"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"          # All protocols
+      cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
+    }
+  ]
+
+
 }
 
 variable "ec2_instance_type" {

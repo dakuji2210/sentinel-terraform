@@ -14,28 +14,28 @@ provider "aws" {
 
 
 resource "aws_vpc" "test_vpc" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_support = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
-  
-  
+
+
   tags = {
     Name = var.aws_vpc_name
   }
 }
 
 resource "aws_subnet" "test_subnet_private" {
-  count = length(var.private_subnet_cidr)
-  vpc_id = aws_vpc.test_vpc.id
-  cidr_block = var.private_subnet_cidr[count.index]   # Use the availability zone from the variable or default to the first AZ
-  availability_zone = var.private_subnet_az[count.index]
+  count                   = length(var.private_subnet_cidr)
+  vpc_id                  = aws_vpc.test_vpc.id
+  cidr_block              = var.private_subnet_cidr[count.index] # Use the availability zone from the variable or default to the first AZ
+  availability_zone       = var.private_subnet_az[count.index]
   map_public_ip_on_launch = false
   tags = {
-   
+
     Name = "test_subnet{count.index + 1}_private"
   }
-    }
-  
+}
+
 resource "aws_subnet" "test_subnet_public" {
   vpc_id                  = aws_vpc.test_vpc.id
   cidr_block              = var.public_subnet_cidr
@@ -80,8 +80,8 @@ resource "aws_route_table_association" "test_route_table_association_public" {
   route_table_id = aws_route_table.test_route_table_public.id
 }
 resource "aws_route_table_association" "test_route_table_association_private" {
-  count = length(var.private_subnet_cidr)
-  subnet_id = aws_subnet.test_subnet_private[count.index].id
+  count          = length(var.private_subnet_cidr)
+  subnet_id      = aws_subnet.test_subnet_private[count.index].id
   route_table_id = aws_route_table.test_route_table_private.id
 }
 
@@ -108,19 +108,29 @@ resource "aws_security_group" "test_sg" {
   description = "Security group for test VPC"
   vpc_id      = aws_vpc.test_vpc.id
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["152.58.183.242/32"] # Replace with your IP address
+  dynamic "ingress" {
+    for_each = var.aws_sg_ingress
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.from_port
+      to_port     = ingress.value.to_port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+
+    }
 
 
   }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"          # All protocols
-    cidr_blocks = ["0.0.0.0/0"] # Allow all outbound traffic
+  dynamic "egress" {
+    for_each = var.aws_sg_egress
+    content {
+      description = egress.value.description
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
+
   }
   tags = {
     Name = "test_sg"
