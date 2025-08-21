@@ -1,0 +1,36 @@
+# Terraform files: enforce LF line endings
+*.tf text eol=lf
+*.tfvars text eol=lf
+*.hcl text eol=lf
+
+# Sentinel policies and governance scripts
+*.sentinel text eol=lf
+*.rego text eol=lf
+
+# Shell scripts and CI/CD helpers
+*.sh text eol=lf
+*.bash text eol=lf
+*.ps1 text eol=crlf
+
+# YAML/JSON configs
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+
+# Markdown and documentation
+*.md text eol=lf
+
+# PEM keys and certs (critical: must stay LF)
+*.pem text eol=lf
+*.crt text eol=lf
+*.key text eol=lf
+
+# Ignore binary formatting
+*.zip binary
+*.exe binary
+*.tar.gz binary
+*.tgz binary
+
+# Optional: enforce UTF-8 encoding
+*.tf text working-tree-encoding=UTF-8
+*.sentinel text working-tree-encoding=UTF-8
