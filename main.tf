@@ -13,20 +13,19 @@ provider "aws" {
 }
 
 
-resource "aws_vpc" "test_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+resource "aws_vpc" "multi_vpc" {
+  for_each = { for vpc in var.vpcs : vpc.name => vpc }
 
-
-  tags = {
-    Name = var.aws_vpc_name
-  }
+  cidr_block           = each.value.cidr
+  enable_dns_support   = each.value.enable_dns_support
+  enable_dns_hostnames = each.value.enable_dns_hostnames
+  tags                 = each.value.tags
 }
 
 resource "aws_subnet" "test_subnet_private" {
+
   count                   = length(var.private_subnet_cidr)
-  vpc_id                  = aws_vpc.test_vpc.id
+  vpc_id                  = aws_vpc.multi_vpc[0].id # Use the first VPC in the list
   cidr_block              = var.private_subnet_cidr[count.index] # Use the availability zone from the variable or default to the first AZ
   availability_zone       = var.private_subnet_az[count.index]
   map_public_ip_on_launch = false

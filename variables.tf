@@ -5,15 +5,81 @@ variable "region" {
 
 }
 ###################################################################
-variable "aws_vpc_name" {
+/*variable "aws_vpc_name" {
   description = "CIDR block for the VPC"
-  type        = string
-  default     = "test_vpc"
+  type        = list(object({
+    name = string
+    cidr = string
+    enable_dns_support   = bool
+    enable_dns_hostnames = bool
+    tags = map(string)
+}))
+  default     = [
+    {
+      name = "test_vpc"
+      cidr = "10.0.0.0/16"
+      enable_dns_support   = true
+      enable_dns_hostnames = true
+      tags = {
+        Name = "test_vpc"
+      }
+    },
 
+    {
+      name = "test_vpc"
+      cidr = "10.0.1.0/16"
+      enable_dns_support   = true
+      enable_dns_hostnames = true
+      tags = {
+        Name = "dev_vpc"
+      }
+    }
+  ]
+
+}*/
+
+variable "vpcs" {
+  type = list(object({
+    name                 = string
+    cidr                 = string
+    enable_dns_support   = bool
+    enable_dns_hostnames = bool
+    tags                 = map(string)
+  }))
+  default = [
+    {
+      name                 = "test_vpc"
+      cidr                 = "10.0.0.0/16"
+      enable_dns_support   = true
+      enable_dns_hostnames = true
+      tags                 = {
+        Name = "test_vpc"
+      }
+    },
+    {
+      name                 = "dev_vpc"
+      cidr                 = "10.0.1.0/16"
+      enable_dns_support   = true
+      enable_dns_hostnames = true
+      tags                 = {
+        Name = "dev_vpc"
+      }
+    },
+    {
+      name                 = "prod_vpc"
+      cidr                 = "10.0.2.0/16"
+      enable_dns_support   = true
+      enable_dns_hostnames = true
+      tags                 = {
+        Name = "prod_vpc"
+      }
+    }
+  ]
 }
 
 ####################################################################
 variable "private_subnet_cidr" {
+  
   description = "CIDR block for the private subnet"
   type        = list(string)
   default     = ["10.0.0.0/24", "10.0.1.0/24"]
