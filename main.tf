@@ -25,7 +25,7 @@ resource "aws_vpc" "multi_vpc" {
 resource "aws_subnet" "test_subnet_private" {
 
   count                   = length(var.private_subnet_cidr)
-  vpc_id                  = aws_vpc.multi_vpc[0].id # Use the first VPC in the list
+  vpc_id                  = aws_vpc.multi_vpc[count.index].id # Use the first VPC in the list
   cidr_block              = var.private_subnet_cidr[count.index] # Use the availability zone from the variable or default to the first AZ
   availability_zone       = var.private_subnet_az[count.index]
   map_public_ip_on_launch = false
